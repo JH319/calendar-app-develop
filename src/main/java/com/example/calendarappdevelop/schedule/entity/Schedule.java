@@ -1,5 +1,6 @@
 package com.example.calendarappdevelop.schedule.entity;
 
+import com.example.calendarappdevelop.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,21 +15,23 @@ public class Schedule extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String author;
     @Column(length = 30, nullable = false)
     private String title;
     @Column(length = 200, nullable = false)
     private String content;
 
-    public Schedule(String author, String title, String content) {
-        this.author = author;
+    // 단방향 관계
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)  // optional은 JPA에서 null 허용 여부
+    @JoinColumn(name = "userId", nullable = false) // nullable은 DB에서 null 허용 여부
+    private User user;
+
+    public Schedule(User user, String title, String content) {
+        this.user = user;
         this.title = title;
         this.content = content;
     }
 
-    public void update(String author, String title, String content) {
-        this.author = author;
+    public void update(String title, String content) {
         this.title = title;
         this.content = content;
     }

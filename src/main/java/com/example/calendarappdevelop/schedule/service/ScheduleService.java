@@ -3,6 +3,8 @@ package com.example.calendarappdevelop.schedule.service;
 import com.example.calendarappdevelop.schedule.dto.*;
 import com.example.calendarappdevelop.schedule.entity.Schedule;
 import com.example.calendarappdevelop.schedule.repository.ScheduleRepository;
+import com.example.calendarappdevelop.user.entity.User;
+import com.example.calendarappdevelop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,19 +17,24 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
     // 일정 생성
     @Transactional
     public CreateScheduleResponse save(CreateScheduleRequest request) {
+        User user = userRepository.findById(request.getUserId()).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 유저입니다.")
+        );
         Schedule schedule = new Schedule(
-                request.getAuthor(),
+                user,
                 request.getTitle(),
                 request.getContent()
         );
         Schedule savedSchedule = scheduleRepository.save(schedule);
         return new CreateScheduleResponse(
                 savedSchedule.getId(),
-                savedSchedule.getAuthor(),
+                savedSchedule.getUser().getId(),
+                savedSchedule.getUser().getUserName(),
                 savedSchedule.getTitle(),
                 savedSchedule.getContent(),
                 savedSchedule.getCreatedAt(),
@@ -37,11 +44,11 @@ public class ScheduleService {
 
     // 전체 일정 조회
     @Transactional(readOnly = true)
-    public List<GetScheduleResponse> findSchedules(String author) {
+    public List<GetScheduleResponse> findSchedules(Long userId) {
         List<Schedule> schedules;
         // 작성자명이 있을 때
-        if (author != null) {
-            schedules = scheduleRepository.findByAuthorOrderByModifiedAtDesc(author);
+        if (userId != null) {
+            schedules = scheduleRepository.findByUserIdOrderByModifiedAtDesc(userId);
         }
         // 작성자명이 없을 때
         else {
@@ -51,7 +58,8 @@ public class ScheduleService {
         for (Schedule schedule : schedules) {
             GetScheduleResponse dto = new GetScheduleResponse(
                     schedule.getId(),
-                    schedule.getAuthor(),
+                    schedule.getUser().getId(),
+                    schedule.getUser().getUserName(),
                     schedule.getTitle(),
                     schedule.getContent(),
                     schedule.getCreatedAt(),
@@ -70,7 +78,8 @@ public class ScheduleService {
         );
         return new GetScheduleResponse(
                 schedule.getId(),
-                schedule.getAuthor(),
+                schedule.getUser().getId(),
+                schedule.getUser().getUserName(),
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getCreatedAt(),
@@ -87,13 +96,13 @@ public class ScheduleService {
         );
 
         schedule.update(
-                request.getAuthor(),
                 request.getTitle(),
                 request.getContent()
         );
         return new UpdateScheduleResponse(
                 schedule.getId(),
-                schedule.getAuthor(),
+                schedule.getUser().getId(),
+                schedule.getUser().getUserName(),
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getCreatedAt(),
