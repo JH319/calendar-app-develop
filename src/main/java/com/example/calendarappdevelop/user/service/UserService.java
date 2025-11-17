@@ -25,7 +25,8 @@ public class UserService {
     public CreateUserResponse save(CreateUserRequest request) {
         User user = new User(
                 request.getUserName(),
-                request.getEmail()
+                request.getEmail(),
+                request.getPassword()
         );
         User savedUser = userRepository.save(user);
         return new CreateUserResponse(
