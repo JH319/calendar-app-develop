@@ -1,6 +1,10 @@
 package com.example.calendarappdevelop.schedule.controller;
 
-import com.example.calendarappdevelop.schedule.dto.*;
+import com.example.calendarappdevelop.schedule.dto.request.CreateScheduleRequest;
+import com.example.calendarappdevelop.schedule.dto.request.UpdateScheduleRequest;
+import com.example.calendarappdevelop.schedule.dto.response.CreateScheduleResponse;
+import com.example.calendarappdevelop.schedule.dto.response.GetScheduleResponse;
+import com.example.calendarappdevelop.schedule.dto.response.UpdateScheduleResponse;
 import com.example.calendarappdevelop.schedule.service.ScheduleService;
 import com.example.calendarappdevelop.common.exception.CustomException;
 import com.example.calendarappdevelop.common.exception.ErrorMessage;
