@@ -1,5 +1,6 @@
 package com.example.calendarappdevelop.user.service;
 
+import com.example.calendarappdevelop.common.config.PasswordEncoder;
 import com.example.calendarappdevelop.common.exception.CustomException;
 import com.example.calendarappdevelop.common.exception.ErrorMessage;
 import com.example.calendarappdevelop.user.dto.*;
@@ -19,6 +20,7 @@ import java.util.Objects;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 회원가입
     public User create(RegisterRequest request) {
@@ -26,11 +28,12 @@ public class UserService {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new CustomException(ErrorMessage.DUPLICATE_EMAIL_ERROR);
         }
+        String encoderedPassword = passwordEncoder.encode(request.getPassword());
 
         User user = new User(
                 request.getUserName(),
                 request.getEmail(),
-                request.getPassword()
+                encoderedPassword
         );
         return userRepository.save(user);
     }
@@ -44,8 +47,7 @@ public class UserService {
         );
 
         // 비밀번호 일치 확인
-        if (!user.getPassword().equals(request.getPassword())) {
-            // 비밀번호 불일치 -> 401 예외 발생
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(ErrorMessage.PASSWORD_AUTH_FAIL);
         }
 
