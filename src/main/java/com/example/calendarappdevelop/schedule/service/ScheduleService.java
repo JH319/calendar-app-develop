@@ -3,8 +3,12 @@ package com.example.calendarappdevelop.schedule.service;
 import com.example.calendarappdevelop.schedule.dto.*;
 import com.example.calendarappdevelop.schedule.entity.Schedule;
 import com.example.calendarappdevelop.schedule.repository.ScheduleRepository;
+import com.example.calendarappdevelop.user.config.CustomException;
+import com.example.calendarappdevelop.user.config.ErrorMessage;
+import com.example.calendarappdevelop.user.dto.SessionUser;
 import com.example.calendarappdevelop.user.entity.User;
 import com.example.calendarappdevelop.user.repository.UserRepository;
+import com.example.calendarappdevelop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,21 +22,29 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     // 일정 생성
     @Transactional
-    public CreateScheduleResponse save(CreateScheduleRequest request) {
-        User user = userRepository.findById(request.getUserId()).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 유저입니다.")
+    public CreateScheduleResponse save(SessionUser sessionUser, CreateScheduleRequest request) {
+        // 1. 유저 아이디로 User Entity 조회
+        User user = userRepository.findById(sessionUser.getId()).orElseThrow(
+                () -> new CustomException(ErrorMessage.NOT_FOUND_USER)
         );
+
+        // 2. 요청받은 DTO를 Entity로 변환
         Schedule schedule = new Schedule(
                 user,
                 request.getTitle(),
                 request.getContent()
         );
+
+        // 3. 변환된 Entity를 DB에 저장
         Schedule savedSchedule = scheduleRepository.save(schedule);
+
+        // 4. 저장된 Entity를 Controller에 반환
         return new CreateScheduleResponse(
-                savedSchedule.getId(),
+                savedSchedule.getScheduleId(),
                 savedSchedule.getUser().getId(),
                 savedSchedule.getUser().getUserName(),
                 savedSchedule.getTitle(),
@@ -48,7 +60,7 @@ public class ScheduleService {
         List<Schedule> schedules;
         // 작성자명이 있을 때
         if (userId != null) {
-            schedules = scheduleRepository.findByUserIdOrderByModifiedAtDesc(userId);
+            schedules = scheduleRepository.findScheduleByUserId(userId);
         }
         // 작성자명이 없을 때
         else {
@@ -57,7 +69,7 @@ public class ScheduleService {
         List<GetScheduleResponse> dtos = new ArrayList<>();
         for (Schedule schedule : schedules) {
             GetScheduleResponse dto = new GetScheduleResponse(
-                    schedule.getId(),
+                    schedule.getScheduleId(),
                     schedule.getUser().getId(),
                     schedule.getUser().getUserName(),
                     schedule.getTitle(),
@@ -74,10 +86,10 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public GetScheduleResponse findOne(Long Id) {
         Schedule schedule = scheduleRepository.findById(Id).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 일정입니다.")
+                () -> new CustomException(ErrorMessage.NOT_FOUND_POST)
         );
         return new GetScheduleResponse(
-                schedule.getId(),
+                schedule.getScheduleId(),
                 schedule.getUser().getId(),
                 schedule.getUser().getUserName(),
                 schedule.getTitle(),
@@ -89,18 +101,22 @@ public class ScheduleService {
 
     // 일정 수정
     @Transactional
-    public UpdateScheduleResponse updateSchedule(Long Id, UpdateScheduleRequest request) {
-        // 일정 찾기
+    public UpdateScheduleResponse updateSchedule(SessionUser sessionUser, Long Id, UpdateScheduleRequest request) {
+        // 1. Id로 일정 조회
         Schedule schedule = scheduleRepository.findById(Id).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 일정입니다.")
+                () -> new CustomException(ErrorMessage.NOT_FOUND_POST)
         );
 
+        // 2. SessionUser의 Id와 일정 작성한 User의 Id가 같은지 확인
+        userService.sessionMatch(sessionUser, schedule.getUser().getId());
+
+        // 3. Entity 변경하여 DB에 반영
         schedule.update(
                 request.getTitle(),
                 request.getContent()
         );
         return new UpdateScheduleResponse(
-                schedule.getId(),
+                schedule.getScheduleId(),
                 schedule.getUser().getId(),
                 schedule.getUser().getUserName(),
                 schedule.getTitle(),
@@ -112,14 +128,12 @@ public class ScheduleService {
 
     // 일정 삭제
     @Transactional
-    public void delete(Long Id) {
+    public void delete(SessionUser sessionUser, Long Id) {
         // 일정 존재 여부 확인
-        boolean existence = scheduleRepository.existsById(Id);
+        Schedule schedule = scheduleRepository.findById(Id).orElseThrow(
+                () -> new CustomException(ErrorMessage.NOT_FOUND_POST));
 
-        // 일정이 없는 경우
-        if(!existence) {
-            throw new IllegalStateException("존재하지 않는 일정입니다.");
-        }
+        userService.sessionMatch(sessionUser, schedule.getUser().getId());
 
         // 일정이 있는 경우 -> 삭제
         scheduleRepository.deleteById(Id);

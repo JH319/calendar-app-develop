@@ -2,10 +2,15 @@ package com.example.calendarappdevelop.schedule.controller;
 
 import com.example.calendarappdevelop.schedule.dto.*;
 import com.example.calendarappdevelop.schedule.service.ScheduleService;
+import com.example.calendarappdevelop.user.config.CustomException;
+import com.example.calendarappdevelop.user.config.ErrorMessage;
+import com.example.calendarappdevelop.user.dto.SessionUser;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.util.List;
 
@@ -16,8 +21,18 @@ public class ScheduleController {
 
     // 일정 생성
     @PostMapping("schedules")
-    public ResponseEntity<CreateScheduleResponse> createSchedule(@RequestBody CreateScheduleRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(request));
+    public ResponseEntity<CreateScheduleResponse> createSchedule(
+            @Valid
+            @RequestBody CreateScheduleRequest request,
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser) {
+
+        // 로그인 확인
+        if (sessionUser == null) {
+            throw new CustomException(ErrorMessage.LOGIN_REQUIRED);
+        }
+        CreateScheduleResponse result = scheduleService.save(sessionUser, request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     // 전체 일정 조회
@@ -28,25 +43,39 @@ public class ScheduleController {
     }
 
     // 선택 일정 조회
-    @GetMapping("/schedules/{Id}")
-    public ResponseEntity<GetScheduleResponse> getSchedule(@PathVariable Long Id) {
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.findOne(Id));
+    @GetMapping("/schedules/{scheduleId}")
+    public ResponseEntity<GetScheduleResponse> getSchedule(@PathVariable Long scheduleId) {
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.findOne(scheduleId));
     }
 
     // 일정 수정
-    @PutMapping("/schedules/{Id}")
+    @PutMapping("/schedules/{scheduleId}")
     public ResponseEntity<UpdateScheduleResponse> updateSchedule(
-            @PathVariable Long Id,
-            @RequestBody UpdateScheduleRequest request) {
+            @Valid
+            @PathVariable Long scheduleId,
+            @RequestBody UpdateScheduleRequest request,
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser) {
 
-        UpdateScheduleResponse response = scheduleService.updateSchedule(Id, request);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        // 로그인 확인
+        if (sessionUser == null) {
+            throw new CustomException(ErrorMessage.LOGIN_REQUIRED);
+        }
+        UpdateScheduleResponse result = scheduleService.updateSchedule(sessionUser, scheduleId, request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     // 일정 삭제
-    @DeleteMapping("/schedules/{Id}")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable Long Id) {
-        scheduleService.delete(Id);
+    @DeleteMapping("/schedules/{scheduleId}")
+    public ResponseEntity<Void> deleteSchedule(@PathVariable Long scheduleId,
+                                               @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser) {
+
+        // 로그인 확인
+        if (sessionUser == null) {
+            throw new CustomException(ErrorMessage.LOGIN_REQUIRED);
+        }
+
+        scheduleService.delete(sessionUser, scheduleId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

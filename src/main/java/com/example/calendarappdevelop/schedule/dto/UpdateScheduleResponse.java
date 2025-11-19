@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class UpdateScheduleResponse {
-    private final Long id;
+    private final Long scheduleId;
     private final Long userId;
     private final String userName;
     private final String title;
@@ -14,8 +14,8 @@ public class UpdateScheduleResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public UpdateScheduleResponse(Long id, Long userId, String userName, String title, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        this.id = id;
+    public UpdateScheduleResponse(Long scheduleId, Long userId, String userName, String title, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        this.scheduleId = scheduleId;
         this.userId = userId;
         this.userName = userName;
         this.title = title;
