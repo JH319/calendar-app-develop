@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
@@ -25,7 +26,6 @@ public class ScheduleService {
     private final UserService userService;
 
     // 일정 생성
-    @Transactional
     public CreateScheduleResponse save(SessionUser sessionUser, CreateScheduleRequest request) {
         // 1. 유저 아이디로 User Entity 조회
         User user = userRepository.findById(sessionUser.getId()).orElseThrow(
@@ -100,7 +100,6 @@ public class ScheduleService {
     }
 
     // 일정 수정
-    @Transactional
     public UpdateScheduleResponse updateSchedule(SessionUser sessionUser, Long Id, UpdateScheduleRequest request) {
         // 1. Id로 일정 조회
         Schedule schedule = scheduleRepository.findById(Id).orElseThrow(
@@ -127,7 +126,6 @@ public class ScheduleService {
     }
 
     // 일정 삭제
-    @Transactional
     public void delete(SessionUser sessionUser, Long Id) {
         // 일정 존재 여부 확인
         Schedule schedule = scheduleRepository.findById(Id).orElseThrow(
