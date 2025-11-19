@@ -1,4 +1,4 @@
-package com.example.calendarappdevelop.user.config;
+package com.example.calendarappdevelop.common.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

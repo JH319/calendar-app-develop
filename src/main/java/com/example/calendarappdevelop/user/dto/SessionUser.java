@@ -1,6 +1,6 @@
 package com.example.calendarappdevelop.user.dto;
 
-import com.example.calendarappdevelop.user.entity.User;
+import com.example.calendarappdevelop.common.entity.User;
 import lombok.Getter;
 
 @Getter

@@ -1,7 +1,7 @@
 package com.example.calendarappdevelop.user.controller;
 
 import com.example.calendarappdevelop.user.dto.*;
-import com.example.calendarappdevelop.user.entity.User;
+import com.example.calendarappdevelop.common.entity.User;
 import com.example.calendarappdevelop.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

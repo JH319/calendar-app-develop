@@ -1,12 +1,12 @@
 package com.example.calendarappdevelop.schedule.service;
 
 import com.example.calendarappdevelop.schedule.dto.*;
-import com.example.calendarappdevelop.schedule.entity.Schedule;
+import com.example.calendarappdevelop.common.entity.Schedule;
 import com.example.calendarappdevelop.schedule.repository.ScheduleRepository;
-import com.example.calendarappdevelop.user.config.CustomException;
-import com.example.calendarappdevelop.user.config.ErrorMessage;
+import com.example.calendarappdevelop.common.exception.CustomException;
+import com.example.calendarappdevelop.common.exception.ErrorMessage;
 import com.example.calendarappdevelop.user.dto.SessionUser;
-import com.example.calendarappdevelop.user.entity.User;
+import com.example.calendarappdevelop.common.entity.User;
 import com.example.calendarappdevelop.user.repository.UserRepository;
 import com.example.calendarappdevelop.user.service.UserService;
 import lombok.RequiredArgsConstructor;

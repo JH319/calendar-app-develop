@@ -1,9 +1,9 @@
 package com.example.calendarappdevelop.user.service;
 
-import com.example.calendarappdevelop.user.config.CustomException;
-import com.example.calendarappdevelop.user.config.ErrorMessage;
+import com.example.calendarappdevelop.common.exception.CustomException;
+import com.example.calendarappdevelop.common.exception.ErrorMessage;
 import com.example.calendarappdevelop.user.dto.*;
-import com.example.calendarappdevelop.user.entity.User;
+import com.example.calendarappdevelop.common.entity.User;
 import com.example.calendarappdevelop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

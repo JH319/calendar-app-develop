@@ -2,8 +2,8 @@ package com.example.calendarappdevelop.schedule.controller;
 
 import com.example.calendarappdevelop.schedule.dto.*;
 import com.example.calendarappdevelop.schedule.service.ScheduleService;
-import com.example.calendarappdevelop.user.config.CustomException;
-import com.example.calendarappdevelop.user.config.ErrorMessage;
+import com.example.calendarappdevelop.common.exception.CustomException;
+import com.example.calendarappdevelop.common.exception.ErrorMessage;
 import com.example.calendarappdevelop.user.dto.SessionUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

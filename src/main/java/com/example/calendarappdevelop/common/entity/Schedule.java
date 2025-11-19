@@ -1,6 +1,5 @@
-package com.example.calendarappdevelop.schedule.entity;
+package com.example.calendarappdevelop.common.entity;
 
-import com.example.calendarappdevelop.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

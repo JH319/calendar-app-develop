@@ -1,4 +1,4 @@
-package com.example.calendarappdevelop.schedule.entity;
+package com.example.calendarappdevelop.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

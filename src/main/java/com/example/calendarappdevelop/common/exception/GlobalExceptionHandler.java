@@ -1,4 +1,4 @@
-package com.example.calendarappdevelop.user.config;
+package com.example.calendarappdevelop.common.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

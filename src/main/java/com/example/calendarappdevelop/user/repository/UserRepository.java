@@ -1,6 +1,6 @@
 package com.example.calendarappdevelop.user.repository;
 
-import com.example.calendarappdevelop.user.entity.User;
+import com.example.calendarappdevelop.common.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

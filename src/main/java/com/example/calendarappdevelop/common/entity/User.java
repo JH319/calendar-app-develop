@@ -1,4 +1,4 @@
-package com.example.calendarappdevelop.user.entity;
+package com.example.calendarappdevelop.common.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
